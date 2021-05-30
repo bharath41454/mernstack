@@ -19,7 +19,7 @@ const DUMMY_PLACES = [
   {
     id: "p2",
     title: "Empire",
-    description: "lorem ipsum dolor sit amet",
+    description: "lepsum orem ipsum dolor sit amet",
     address: "lorem ipsum",
     imageUrl:
       "https://www.technobuffalo.com/sites/technobuffalo.com/files/styles/large/public/wp/2016/10/google-pixel-sample-photos-edited-054.jpg",

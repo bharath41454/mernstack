@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import Button from "../../shared/components/FormElements/Button";
 import Input from "../../shared/components/FormElements/Input";
+import Card from "../../shared/components/UIElements/Card";
 import { useForm } from "../../shared/hooks/form-hook";
 import {
   VALIDATOR_MINLENGTH,
@@ -27,7 +28,7 @@ const DUMMY_PLACES = [
   {
     id: "p2",
     title: "Empire",
-    description: "lorem ipsum dolor sit amet",
+    description: "epsum lorem ipsum dolor sit amet",
     address: "lorem ipsum",
     imageUrl:
       "https://www.technobuffalo.com/sites/technobuffalo.com/files/styles/large/public/wp/2016/10/google-pixel-sample-photos-edited-054.jpg",
@@ -57,19 +58,21 @@ const UpdatePlace = () => {
   const [formState, InputHandler, setFormData] = useForm(initialState, true);
 
   useEffect(() => {
-    setFormData(
-      {
-        title: {
-          value: identifiedPlace.title,
-          isValid: true,
+    if (identifiedPlace) {
+      setFormData(
+        {
+          title: {
+            value: identifiedPlace.title,
+            isValid: true,
+          },
+          description: {
+            value: identifiedPlace.description,
+            isValid: true,
+          },
         },
-        description: {
-          value: identifiedPlace.description,
-          isValid: true,
-        },
-      },
-      true
-    );
+        true
+      );
+    }
     setIsLoading(false);
   }, [setFormData, identifiedPlace]);
 
@@ -81,7 +84,9 @@ const UpdatePlace = () => {
   if (!identifiedPlace) {
     return (
       <div className='center'>
-        <h2>Could not find place</h2>
+        <Card>
+          <h2>Could not find place</h2>
+        </Card>
       </div>
     );
   }

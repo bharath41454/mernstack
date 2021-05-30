@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer } from "react";
+import React from "react";
 
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
@@ -9,8 +9,8 @@ import {
 import "./PlaceForm.css";
 import { useForm } from "../../shared/hooks/form-hook";
 
-const initialState = {
-  inputs: {
+const NewPlace = () => {
+  const initialState = {
     title: {
       value: "",
       isValid: false,
@@ -23,9 +23,8 @@ const initialState = {
       value: "",
       isValid: false,
     },
-  },
-};
-const NewPlace = () => {
+  };
+
   const [formState, InputHandler] = useForm(initialState, false);
 
   const placeSubmitHandler = (event) => {
