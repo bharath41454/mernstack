@@ -1,5 +1,7 @@
-const HttpError = require("../models/https-error");
+const { validationResult } = require("express-validator");
 const { v4: uuid } = require("uuid");
+const HttpError = require("../models/https-error");
+const getCoordinatesForAddress = require("../util/location");
 
 let DUMMY_PLACES = [
   {
@@ -10,7 +12,7 @@ let DUMMY_PLACES = [
       lat: 40.74,
       lng: -73.98,
     },
-    address: "lorem ipsum",
+    address: "Empire state",
     creator: "UI",
   },
 ];
@@ -28,10 +30,10 @@ const getPlaceById = (req, res, next) => {
   res.json({ place });
 };
 
-const getPlaceUserId = (req, res, next) => {
+const getPlacesUserId = (req, res, next) => {
   const userId = req.params.uid;
-  const place = DUMMY_PLACES.find((p) => {
-    return p.creator === userId;
+  const place = DUMMY_PLACES.filter(({ creator }) => {
+    return creator === userId;
   });
   if (!place) {
     return next(
@@ -41,8 +43,22 @@ const getPlaceUserId = (req, res, next) => {
   res.json({ place });
 };
 
-const createPlace = (req, res, next) => {
-  const { title, description, coordinates, address, creator } = req.body;
+const createPlace = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // while working with async throw doesnt work correctly so use next in this case
+    // throw new HttpError("Received invalid inputs", 422);
+    return next(new HttpError("Received invalid inputs", 422));
+  }
+  const { title, description, address, creator } = req.body;
+
+  let coordinates;
+  try {
+    coordinates = await getCoordinatesForAddress(address);
+  } catch (error) {
+    return next(error);
+  }
+
   const createdPlace = {
     id: uuid(),
     title,
@@ -57,6 +73,10 @@ const createPlace = (req, res, next) => {
 };
 
 const updatePlace = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new HttpError("Received invalid inputs", 422);
+  }
   const { pid: placeId } = req.params;
   const { title, description } = req.body;
 
@@ -72,12 +92,15 @@ const updatePlace = (req, res, next) => {
 
 const deletePlace = (req, res, next) => {
   const { pid: placeId } = req.params;
+  if (!DUMMY_PLACES.some(({ id }) => id === placeId)) {
+    throw new HttpError("Could not find place", 404);
+  }
   DUMMY_PLACES = DUMMY_PLACES.filter(({ id }) => id !== placeId);
   res.status(200).json({ message: "Deleted Place" + placeId });
 };
 
 exports.getPlaceById = getPlaceById;
-exports.getPlaceUserId = getPlaceUserId;
+exports.getPlacesUserId = getPlacesUserId;
 exports.createPlace = createPlace;
 exports.updatePlace = updatePlace;
 exports.deletePlace = deletePlace;
