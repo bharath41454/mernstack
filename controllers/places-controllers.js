@@ -7,20 +7,6 @@ const getCoordinatesForAddress = require("../util/location");
 const Place = require("../models/place");
 const User = require("../models/user");
 
-let DUMMY_PLACES = [
-  {
-    id: "p1",
-    title: "Empire state",
-    description: "Famous sky scrapers",
-    location: {
-      lat: 40.74,
-      lng: -73.98,
-    },
-    address: "Empire state",
-    creator: "UI",
-  },
-];
-
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
   let place;
@@ -44,20 +30,28 @@ const getPlacesUserId = async (req, res, next) => {
   const userId = req.params.uid;
 
   // const place = Place.find(userId).exec(); use this to avoid assync/await
-  let place;
+  // let place;
+  let userWithPlaces;
   try {
-    place = await Place.find({ creator: userId });
+    // place = await Place.find({ creator: userId });
+    userWithPlaces = await User.findById(userId).populate("place");
   } catch (err) {
     const error = new HttpError("Fetching paces failed, pls try later", 500);
     return next(error);
   }
 
-  if (!place) {
+  // if (!place || place.length === 0) {
+  if (!userWithPlaces || userWithPlaces.places.length === 0) {
     return next(
       new HttpError("Could not find a place for provided user id", 404)
     ); // next doesnt return
   }
-  res.json({ places: place.map((place) => place.toObject({ getters: true })) }); // As we have array of items
+
+  console.log(userWithPlaces);
+
+  res.json({
+    places: userWithPlaces.places,
+  }); // As we have array of items
 };
 
 const createPlace = async (req, res, next) => {
@@ -152,7 +146,7 @@ const deletePlace = async (req, res, next) => {
   const { pid: placeId } = req.params;
   let place;
   try {
-    place = await Place.findById(placeId);
+    place = await Place.findById(placeId).populate("creator"); // to get data from other collection based the relation established
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place",
@@ -161,8 +155,18 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  if (!place) {
+    const error = new HttpError("Could not find place for this ID", 404);
+    return next(error);
+  }
+
   try {
-    await place.remove();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await place.remove({ session: sess });
+    place.creator.places.pull(place);
+    await place.creator.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place",
