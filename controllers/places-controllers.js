@@ -47,11 +47,15 @@ const getPlacesUserId = async (req, res, next) => {
     ); // next doesnt return
   }
 
-  console.log(userWithPlaces);
-
   res.json({
     places: userWithPlaces.places,
   }); // As we have array of items
+
+  // res.json({
+  //   places: userWithPlaces.places.map((place) =>
+  //     place.toObject({ getters: true })
+  //   ),
+  // }); // As we have array of items
 };
 
 const createPlace = async (req, res, next) => {
