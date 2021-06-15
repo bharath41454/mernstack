@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const mongoose = require("mongoose");
 const { v4: uuid } = require("uuid");
 
 const HttpError = require("../models/https-error");
@@ -95,12 +96,17 @@ const createPlace = async (req, res, next) => {
   }
 
   if (!user) {
-    const error = new HttpError("Could not user for provided id.", 404);
+    const error = new HttpError("Could not find user for provided id.", 404);
     return next(error);
   }
 
   try {
-    createdPlace.save();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    await createdPlace.save({ session: sess });
+    user.places.push(createdPlace);
+    await user.save({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
     const error = new HttpError(
       "Creating place failed, please try again.",
