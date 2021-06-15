@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 
 const HttpError = require("./models/https-error");
 const placesRoutes = require("./routes/places-routes");
@@ -29,4 +30,14 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message || "An unknown error occurred" });
 }); // express default special error handler
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://bharath:VzOkFlFzwP1TIKDJ@cluster0.iqfzt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    { useUnifiedTopology: true, useNewUrlParser: true }
+  )
+  .then(() => console.log("Db connection established"))
+  .then(() => {
+    app.listen(5000);
+    console.log("app running on port 5000 => http://localhost:5000");
+  })
+  .catch((error) => console.error("error", error));

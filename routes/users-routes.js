@@ -11,9 +11,10 @@ router.post("/login", login);
 router.post(
   "/signup",
   [
-    check("userName").not().isEmpty(),
+    check("name").not().isEmpty(),
     check("email").normalizeEmail().isEmail(),
     check("password").isLength({ min: 6 }),
+    check("places").not().isEmpty(),
   ],
   signup
 );
