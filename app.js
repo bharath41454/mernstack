@@ -11,6 +11,17 @@ const app = express();
 // middleware travels from top to bottom so parsebody before using any middleware
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  // Allow cors
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE");
+  next();
+});
+
 // next to tranfer control to next middleware (app.use)
 
 // middleware that register the places routes
@@ -32,7 +43,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://bharath:VzOkFlFzwP1TIKDJ@cluster0.iqfzt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "mongodb+srv://bharath:VzOkFlFzwP1TIKDJ@cluster0.iqfzt.mongodb.net/demo?retryWrites=true&w=majority",
     { useUnifiedTopology: true, useNewUrlParser: true }
   )
   .then(() => console.log("Db connection established"))

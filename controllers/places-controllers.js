@@ -73,12 +73,12 @@ const createPlace = async (req, res, next) => {
   // } catch (error) {
   //   return next(error);
   // }
-
+  const location = { lat: 1, lng: 2 };
   const createdPlace = new Place({
     title,
     description,
     address,
-    location: coordinates,
+    location,
     image:
       "https://www.technobuffalo.com/sites/technobuffalo.com/files/styles/large/public/wp/2016/10/google-pixel-sample-photos-edited-054.jpg",
     creator,
@@ -86,6 +86,7 @@ const createPlace = async (req, res, next) => {
   try {
     user = await User.findById(creator);
   } catch (err) {
+    console.error(err);
     const error = new HttpError(
       "Creating place failed, please try again.",
       500
@@ -106,6 +107,7 @@ const createPlace = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.error(err);
     const error = new HttpError(
       "Creating place failed, please try again.",
       500
