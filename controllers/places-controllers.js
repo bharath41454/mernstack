@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 const mongoose = require("mongoose");
 const { v4: uuid } = require("uuid");
+const fs = require("fs");
 
 const HttpError = require("../models/https-error");
 const getCoordinatesForAddress = require("../util/location");
@@ -74,8 +75,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     location: coordinates,
-    image:
-      "https://www.technobuffalo.com/sites/technobuffalo.com/files/styles/large/public/wp/2016/10/google-pixel-sample-photos-edited-054.jpg",
+    image: req.file.path,
     creator,
   });
 
@@ -163,6 +163,8 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -173,10 +175,13 @@ const deletePlace = async (req, res, next) => {
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place",
-      404
+      500
     );
     return next(error);
   }
+  fs.unlink(imagePath, (err) => {
+    console.error(err);
+  });
   res.status(200).json({ message: "Deleted Place" + placeId });
 };
 

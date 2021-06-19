@@ -1,6 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const fs = require("fs");
+const path = require("path");
 
 const HttpError = require("./models/https-error");
 const placesRoutes = require("./routes/places-routes");
@@ -10,6 +12,8 @@ const app = express();
 
 // middleware travels from top to bottom so parsebody before using any middleware
 app.use(bodyParser.json());
+
+app.use("/uploads/images", express.static(path.join("uploads", "images"))); // just return the file
 
 app.use((req, res, next) => {
   // Allow cors
@@ -34,6 +38,11 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+  if (req.file) {
+    fs.unlink(req.file.path, (err) => {
+      console.error(err);
+    });
+  }
   if (res.headerSent) {
     return next(error);
   }
