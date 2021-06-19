@@ -43,11 +43,11 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://bharath:VzOkFlFzwP1TIKDJ@cluster0.iqfzt.mongodb.net/demo?retryWrites=true&w=majority",
+    "mongodb+srv://bharath:VzOkFlFzwP1TIKDJ@cluster0.iqfzt.mongodb.net/mx?retryWrites=true&w=majority",
     { useUnifiedTopology: true, useNewUrlParser: true }
   )
-  .then(() => console.log("Db connection established"))
   .then(() => {
+    console.log("Db connection established");
     app.listen(5000);
     console.log("app running on port 5000 => http://localhost:5000");
   })

@@ -13,7 +13,6 @@ const getPlaceById = async (req, res, next) => {
   try {
     place = await Place.findById(placeId);
   } catch (err) {
-    console.log(err);
     const error = new HttpError("Something went wrong", 500);
     return next(error);
   }
@@ -34,9 +33,9 @@ const getPlacesUserId = async (req, res, next) => {
   let userWithPlaces;
   try {
     // place = await Place.find({ creator: userId });
-    userWithPlaces = await User.findById(userId).populate("place");
+    userWithPlaces = await User.findById(userId).populate("places");
   } catch (err) {
-    const error = new HttpError("Fetching paces failed, pls try later", 500);
+    const error = new HttpError("Fetching places failed, pls try later", 500);
     return next(error);
   }
 
@@ -48,14 +47,10 @@ const getPlacesUserId = async (req, res, next) => {
   }
 
   res.json({
-    places: userWithPlaces.places,
-  }); // As we have array of items
-
-  // res.json({
-  //   places: userWithPlaces.places.map((place) =>
-  //     place.toObject({ getters: true })
-  //   ),
-  // }); // As we have array of items
+    places: userWithPlaces.places.map((place) =>
+      place.toObject({ getters: true })
+    ),
+  });
 };
 
 const createPlace = async (req, res, next) => {
@@ -65,24 +60,26 @@ const createPlace = async (req, res, next) => {
     // throw new HttpError("Received invalid inputs", 422);
     return next(new HttpError("Received invalid inputs", 422));
   }
-  const { title, description, coordinates, address, creator } = req.body;
+  const { title, description, address, creator } = req.body;
 
-  // let coordinates;
-  // try {
-  //   coordinates = await getCoordinatesForAddress(address);
-  // } catch (error) {
-  //   return next(error);
-  // }
-  const location = { lat: 1, lng: 2 };
+  let coordinates;
+  try {
+    // coordinates = await getCoordinatesForAddress(address);
+    coordinates = { lat: 1, lng: 2 };
+  } catch (error) {
+    return next(error);
+  }
   const createdPlace = new Place({
     title,
     description,
     address,
-    location,
+    location: coordinates,
     image:
       "https://www.technobuffalo.com/sites/technobuffalo.com/files/styles/large/public/wp/2016/10/google-pixel-sample-photos-edited-054.jpg",
     creator,
   });
+
+  let user;
   try {
     user = await User.findById(creator);
   } catch (err) {
