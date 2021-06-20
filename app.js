@@ -57,7 +57,7 @@ mongoose
   )
   .then(() => {
     console.log("Db connection established");
-    app.listen(5000);
-    console.log("app running on port 5000 => http://localhost:5000");
+    app.listen(process.env.port || 5000);
+    console.log(`app running on port ${process.env.port}`);
   })
   .catch((error) => console.error("error", error));
