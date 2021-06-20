@@ -20,7 +20,7 @@ const UpdatePlace = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const [loadedPlace, setLoadedPlace] = useState();
   const placeId = useParams().placeId;
-  const {userId} = useContext(AuthContext);
+  const { userId, token } = useContext(AuthContext);
   const initialState = {
     title: {
       value: "",
@@ -73,6 +73,7 @@ const UpdatePlace = () => {
         }),
         {
           "content-type": "application/json",
+          Authorization: "Bearer " + token,
         }
       );
       history.push(`/${userId}/places`);

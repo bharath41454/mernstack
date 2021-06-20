@@ -77,12 +77,11 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (e) {
         console.error(e);
       }
     } else {
-      console.log(formState.inputs);
       try {
         const formData = new FormData();
         formData.append("email", formState.inputs.email.value);
@@ -94,7 +93,7 @@ const Auth = () => {
           "POST",
           formData
         );
-        auth.login(responseData.user.id);
+        auth.login(responseData.userId, responseData.token);
       } catch (e) {
         console.error(e);
       }
