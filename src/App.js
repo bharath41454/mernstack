@@ -18,9 +18,9 @@ import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
 
 const Users = React.lazy(() => import("./users/pages/Users"));
-const NewPlace = React.lazy("./places/pages/NewPlaces");
-const UserPlaces = React.lazy("./places/pages/UserPlaces");
-const UpdatePlace = React.lazy("./places/pages/UpdatePlace");
+const NewPlace = React.lazy(() => import("./places/pages/NewPlaces"));
+const UserPlaces = React.lazy(() => import("./places/pages/UserPlaces"));
+const UpdatePlace = React.lazy(() => import("./places/pages/UpdatePlace"));
 
 const App = () => {
   const { token, userId, login, logout } = useAuth();
