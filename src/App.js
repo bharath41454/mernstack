@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -7,14 +7,20 @@ import {
 } from "react-router-dom";
 
 import "./App.css";
-import Users from "./users/pages/Users";
-import NewPlace from "./places/pages/NewPlaces";
+// import Users from "./users/pages/Users";
+// import NewPlace from "./places/pages/NewPlaces";
+// import UserPlaces from "./places/pages/UserPlaces";
+// import UpdatePlace from "./places/pages/UpdatePlace";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
-import UserPlaces from "./places/pages/UserPlaces";
-import UpdatePlace from "./places/pages/UpdatePlace";
+import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import Auth from "./users/pages/Auth";
 import { AuthContext } from "./shared/context/auth-context";
 import { useAuth } from "./shared/hooks/auth-hook";
+
+const Users = React.lazy(() => import("./users/pages/Users"));
+const NewPlace = React.lazy("./places/pages/NewPlaces");
+const UserPlaces = React.lazy("./places/pages/UserPlaces");
+const UpdatePlace = React.lazy("./places/pages/UpdatePlace");
 
 const App = () => {
   const { token, userId, login, logout } = useAuth();
@@ -53,7 +59,17 @@ const App = () => {
       >
         <Router>
           <MainNavigation />
-          <main>{routes}</main>
+          <main>
+            <Suspense
+              fallback={
+                <div className='center'>
+                  <LoadingSpinner />
+                </div>
+              }
+            >
+              {routes}
+            </Suspense>
+          </main>
         </Router>
       </AuthContext.Provider>
     </React.Fragment>
