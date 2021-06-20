@@ -11,10 +11,13 @@ const {
   deletePlace,
 } = require("../controllers/places-controllers");
 const fileUpload = require("../middleware/file-upload");
+const checkAuth = require("../middleware/check-auth");
 
 router.get("/:pid", getPlaceById);
 
 router.get("/user/:uid", getPlacesUserId);
+
+router.use(checkAuth);
 
 router.post(
   "/",
