@@ -1,5 +1,5 @@
 const axios = require("axios");
-const API_KEY = "AIzaSyB57wC2nJfTl7e_x20LldXCHqfC2taiysU";
+const API_KEY = process.env.GOOGLE_API_KEY;
 
 async function getCoordinatesForAddress(address) {
   const response = await axios.get(

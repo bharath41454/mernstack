@@ -52,7 +52,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    "mongodb+srv://bharath:VzOkFlFzwP1TIKDJ@cluster0.iqfzt.mongodb.net/mx?retryWrites=true&w=majority",
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.iqfzt.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
     { useUnifiedTopology: true, useNewUrlParser: true }
   )
   .then(() => {
