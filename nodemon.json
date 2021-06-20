@@ -4,6 +4,7 @@
     "DB_PASSWORD": "VzOkFlFzwP1TIKDJ",
     "DB_NAME": "mx",
     "GOOGLE_API_KEY": "AIzaSyB57wC2nJfTl7e_x20LldXCHqfC2taiysU",
-    "JWT_KEY": "supersecret_dont_share"
+    "JWT_KEY": "supersecret_dont_share",
+    "PORT": 5000
   }
 }
